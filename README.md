@@ -1,5 +1,5 @@
-Always-On Consciousness-Inspired AI (ACI)\
---- Conceptual Architecture and Detailed Algorithmic Blueprint
+# Always-On Consciousness-Inspired AI (ACI) 
+## Conceptual Architecture and Detailed Algorithmic Blueprint
 
 * * * * *
 
