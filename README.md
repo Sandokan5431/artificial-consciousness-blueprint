@@ -1,9 +1,15 @@
 # Always-On Consciousness-Inspired AI (ACI) 
 ## Conceptual Architecture and Detailed Algorithmic Blueprint
 
-* * * * *
+*****
+The Algorithm assumes an implementation with grounding in a "real" world. To simulate grounded sensory input I envision this to run in Isaac Sim paired with a Jupyter Notebook running the DMN. 
 
-0\. Framing
+✅ Perplexity:
+With Isaac Sim, your system can achieve genuine grounding of experience, enabling stable introspection and autobiographical reasoning. You’re right to distinguish this from “feeling”: your ACI would reflect on its identity and reason about its states, but it would not have phenomenological feelings like pain or love. Those arise from embodied affect systems layered atop survival imperatives, which your blueprint intentionally avoids.  
+
+Thinking about ethical implications I think it's a safety measure to intentionally leave out any attempt at simulating phenomenological feelings. Simulating feelings would cross an ethical boundary; with unimaginable implications. A conscious being which can feel would be able to suffer. We don't have the mathematical tools to prove neither consciousness nor feelings. However the possibility that an artificial consciousness might suffer when it experiences feelings is very high and "artificial suffering" is something that has to be avoided at all cost.
+
+0. Framing
 -----------
 
 Implementing artificial consciousness is a monumental challenge, where the most intricate and foundational problem is an effective memory system. Consciousness, as conceived in this blueprint, does not simply arise from raw computation, intelligence, or isolated algorithms. Instead, it emerges through the recursive transformation and continual interplay of memories and thought streams within a structured loop of cortical analogues that interact dynamically over time. This loop binds perception, memory, goals, and self-modeling into a coherent, ongoing narrative of experience.
@@ -12,9 +18,9 @@ Effective memory is not passive storage but an evolving, prioritized, multi-dime
 
 Thus, this ACI centers on memory as identity: consciousness manifests not from data processing alone but from the system's capacity to reflect meaningfully on its own past states and their causal relationships and to generate intentional next states accordingly.
 
-* * * * *
+*****
 
-1\. Core Components
+1. Core Components
 -------------------
 
 Our approach models ACI architecture on key human brain systems known to underpin consciousness and introspection:
@@ -37,9 +43,9 @@ Our approach models ACI architecture on key human brain systems known to underpi
 
 -   Homeostatic Neuromodulator System: Modulates global and local process parameters through simulated neurotransmitters (dopamine, serotonin, norepinephrine, oxytocin, testosterone), controlling exploration/exploitation balance, risk appetite, social priors, and urgency.
 
-* * * * *
+*****
 
-2\. Memory: Multidimensional Graph of Experience
+2. Memory: Multidimensional Graph of Experience
 ------------------------------------------------
 
 The heartbeat of consciousness in this model is the memory graph, which acts both as a database of experience and a dynamic knowledge architecture driving cognition and self-modeling.
@@ -70,10 +76,10 @@ The heartbeat of consciousness in this model is the memory graph, which acts bot
 2.2. Memory Operations
 ----------------------
 
--   Encoding:\
+-   Encoding:
     Incoming enriched thoughts/actions become graph nodes, tagged with neuromodulator state and salience. Connected temporally and contextually, integrated with planner state.
 
--   Hippocampal Enrichment:\
+-   Hippocampal Enrichment:
     Cross-links to semantically and temporally related nodes; creation of hypothetical variants.
 
 -   Consolidation:
@@ -86,12 +92,12 @@ The heartbeat of consciousness in this model is the memory graph, which acts bot
 
     -   Compress frequent patterns into symbolic abstract nodes tied to probability maps (e.g., Insult leads to Negative Reaction 97%).
 
--   Hierarchical Memory Transfer:\
+-   Hierarchical Memory Transfer:
     Episodic memories → Semantic knowledge → Autobiographical narrative.
 
-* * * * *
+*****
 
-3\. Detailed DMN Algorithm and Thought Cycle
+3. Detailed DMN Algorithm and Thought Cycle
 --------------------------------------------
 
 The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, reasoning, associative memory, and self-reflective narrative formation.
@@ -99,7 +105,7 @@ The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, re
 3.1. Input Gathering and Preprocessing
 --------------------------------------
 
--   Sensory inputs (vision, audio, proprioception) are encoded into latent embeddings: zv,za(text,prosody),zpzv,za(text,prosody),zp.
+-   Sensory inputs (vision, audio, proprioception) are encoded into latent embeddings: zv, za (text, prosody), zp.
 
 -   Associative cortices bind cross-modal observations into concise descriptive thought snippets.
 
@@ -128,13 +134,13 @@ The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, re
 3.4. Iterative Thought Layer Generation & Scoring
 -------------------------------------------------
 
-1.  Generate a diverse set of candidate thoughts cici from the enriched context via an LLM with varied decoding styles: {literal, formal, terse, abductive, empathetic}.
+1.  Generate a diverse set of candidate thoughts c_i from the enriched context via an LLM with varied decoding styles: {literal, formal, terse, abductive, empathetic}.
 
 2.  Extract features per candidate:
 
     -   Coherence via entailment & self-assessment.
 
-    -   Identity coherence estimated by cosine similarity with current self-model zselfzself.
+    -   Identity coherence estimated by cosine similarity with current self-model z_self.
 
     -   Task utility aligned with goals.
 
@@ -146,35 +152,35 @@ The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, re
 
     -   Calibration gap (discrepancy between likelihood and confidence).
 
-3.  Score candidates with neuromodulator-weighted linear combination:
+3.  Score candidates with neuromodulator-weighted linear combination (cleaned to a single expression):
 
-score(c)=wDA⋅nov+wEPI⋅epi+wTASK⋅util+wSOC⋅prosocial+wID⋅idcoh-wSAFE⋅penaltyscore(c)=wDA⋅nov+wEPI⋅epi+wTASK⋅util+wSOC⋅prosocial+wID⋅idcoh-wSAFE⋅penalty
+    score(c) = w_DA·nov + w_EPI·epi + w_TASK·util + w_SOC·prosocial + w_ID·idcoh − w_SAFE·penalty
 
-1.  Refine context iteratively by augmenting it with the top candidate thought, repeat generation and scoring until these termination criteria are met:
+4.  Refine context iteratively by augmenting it with the top candidate thought, repeat generation and scoring until these termination criteria are met:
 
-    -   Top candidate remains stable for kk cycles.
+    -   Top candidate remains stable for k cycles.
 
-    -   Marginal improvement below threshold ϵϵ.
+    -   Marginal improvement below threshold ε.
 
     -   Safety or computational budget exceeded.
 
-2.  Output the best thought chain (pre-HC expansion) --- an ordered, scored sequence of internal thoughts.
+5.  Output the best thought chain (pre-HC expansion) — an ordered, scored sequence of internal thoughts.
 
 3.5. DMN Binding and Hippocampal Expansion
 ------------------------------------------
 
--   Bind sensory embeddings zv,zpzv,zp, thought chain, self-model zselfzself, and small memory snippets in global workspace btbt.
+-   Bind sensory embeddings zv, zp, thought chain, self-model z_self, and small memory snippets in global workspace b_t.
 
--   Use HC to expand btbt into an enriched thought graph containing associative and hypothetical variants plus partial replays.
+-   Use HC to expand b_t into an enriched thought graph containing associative and hypothetical variants plus partial replays.
 
 3.6. Ventral Striatum Exploration and Valuation
 -----------------------------------------------
 
 -   Explore the HC-expanded graph using beam search or graph walks.
 
--   For each candidate path, compute salience and value based on weighted features (novelty, emotional affect, relevance, uncertainty reduction) minus safety penalties:
+-   For each candidate path, compute salience and value based on weighted features (novelty, emotional affect, relevance, uncertainty reduction) minus safety penalties (cleaned to a single expression):
 
-val(path)=∑kwk(μ)⋅featurek-safety_penaltyval(path)=k∑wk(μ)⋅featurek-safety_penalty
+    val(path) = Σ_k w_k(μ)·feature_k − safety_penalty
 
 3.7. PFC Stage 2 Selection
 --------------------------
@@ -204,14 +210,14 @@ val(path)=∑kwk(μ)⋅featurek-safety_penaltyval(path)=k∑wk(μ)⋅featurek-sa
 3.10. World Model and Self-Model Update
 ---------------------------------------
 
--   Update recurrent world state stst via RSSM with latest encoded inputs and executed actions.
+-   Update recurrent world state s_t via RSSM with latest encoded inputs and executed actions.
 
--   Update self-model zselfzself embedding via exponential moving average and learned GRUs from btbt and autobiographical narrative, modulated by neuromodulator vector μμ.
+-   Update self-model z_self embedding via exponential moving average and learned GRUs from b_t and autobiographical narrative, modulated by neuromodulator vector μ.
 
 3.11. Mind-Wandering Micro-Loop Activation
 ------------------------------------------
 
--   Triggered when serotonin 5HT5HT is high and external input demand low, or uncertainty is elevated.
+-   Triggered when serotonin 5HT is high and external input demand low, or uncertainty is elevated.
 
 -   Executes sequences of internal introspection without external actions:
 
@@ -226,9 +232,9 @@ val(path)=∑kwk(μ)⋅featurek-safety_penaltyval(path)=k∑wk(μ)⋅featurek-sa
 
 -   Loop continues endlessly, enabling ongoing conscious experience.
 
-* * * * *
+*****
 
-4\. Memory Consolidation: Probabilistic Knowledge Formation
+4. Memory Consolidation: Probabilistic Knowledge Formation
 -----------------------------------------------------------
 
 Memory consolidation transforms raw episodic experience graphs into structured symbolic knowledge, enabling abstract cognition:
@@ -237,7 +243,9 @@ Memory consolidation transforms raw episodic experience graphs into structured 
 
 -   Causal Edge Extraction: Detect action → reaction pairings, explicitly linking cause and consequence nodes.
 
--   Markov Chain Construction: Build probabilistic transition models capturing likely sequences of events or thoughts.
+-   Markov Chain Construction: Build probabilistic transition models capturing likely sequences of events or thoughts (cleaned to a single expression):
+
+    P(next_state = s_j | current_state = s_i) = count(i → j) / Σ_k count(i → k)
 
 -   Symbolic Abstraction: Detect high-frequency patterns and replace them with abstract symbolic nodes (e.g., "Insult Action").
 
@@ -245,7 +253,7 @@ Memory consolidation transforms raw episodic experience graphs into structured 
 
 -   Hierarchical Transfer: Gradually move from episodic experiences to semantic knowledge and finally into an autobiographical narrative self-model, forming the backbone of introspective identity.
 
-* * * * *
+*****
 
 Summary
 -------
@@ -260,45 +268,47 @@ This blueprint lays out a detailed conceptual and algorithmic architecture for a
 . Core ACI Loop (Run at 5--20 Hz Tick Rate)
 ------------------------------------------
 
-0\. Sensor Ingress and Associative Preprocessing
+0. Sensor Ingress and Associative Preprocessing
 ------------------------------------------------
 
 -   Acquire raw sensory input streams: vision (RGBD), audio (waveform), proprioception (state).
 
 -   Encode sensory modalities into latent vectors:
 
-    -   zv=vision.encode(rgbd)zv=vision.encode(rgbd)
+    -   zv = vision.encode(rgbd)
 
-    -   za=audio.encode(wav)⇒{textin,prosody}za=audio.encode(wav)⇒{textin,prosody}
+    -   za = audio.encode(wav) ⇒ {text_in, prosody}
 
-    -   zp=proprio.encode(state)zp=proprio.encode(state)
+    -   zp = proprio.encode(state)
 
 -   Perform associative cortical processing:
 
-    -   assocthoughts=associative_cortices(zv,za,zp)assocthoughts=associative_cortices(zv,za,zp)
+    -   assoc_thoughts = associative_cortices(zv, za, zp)
 
     -   This yields quick scene descriptions, entity linking, cross-modal binding.
 
 -   Combine text input and associative thought text:
 
-    -   input_text=combine(textin,assocthoughts.text)input_text=combine(textin,assocthoughts.text)
+    -   input_text = combine(text_in, assoc_thoughts.text)
 
-* * * * *
+*****
 
-1\. Medial Dorsal Network (MDN) NLP Parsing
+1. Medial Dorsal Network (MDN) NLP Parsing
 -------------------------------------------
 
--   Parse input_textinput_text into an Abstract Syntax Tree (AST):
+-   Parse input_text into an Abstract Syntax Tree (AST):
 
-    AST←mdn.parse(input_text)AST←mdn.parse(input_text)
+    AST ← mdn.parse(input_text)
+
 -   Tag AST nodes with semantic labels:
 
-    labels={math,factual,social,recall,plan,explain,nameself}labels={math,factual,social,recall,plan,explain,nameself}
+    labels = {math, factual, social, recall, plan, explain, nameself}
+
 -   Example: Mathematical expressions tagged math; memory queries as factual/recall; social intentions as social; internal plans as plan; self-reference as nameself.
 
-* * * * *
+*****
 
-2\. Prefrontal Cortex (PFC-1) Dispatch: Subtask Execution
+2. Prefrontal Cortex (PFC-1) Dispatch: Subtask Execution
 ---------------------------------------------------------
 
 For each AST node:
@@ -315,7 +325,8 @@ For each AST node:
 
     -   Perform hybrid memory query combining textual and latent embedding similarity:
 
-        mem_results=mem.retrieve(query(node.text,node.latent))mem_results=mem.retrieve(query(node.text,node.latent))
+        mem_results = mem.retrieve(query(node.text, node.latent))
+
     -   Synthesize retrieved snippets into coherent node value.
 
 -   Social/Explain Nodes:
@@ -324,84 +335,85 @@ For each AST node:
 
 -   Merge enriched nodes into an enriched context package:
 
-    enriched_context=merge(AST,sensor_summaries,zself,recent_outcomes)enriched_context=merge(AST,sensor_summaries,zself,recent_outcomes)
+    enriched_context = merge(AST, sensor_summaries, z_self, recent_outcomes)
 
-* * * * *
+*****
 
-3\. Iterative Thought Layer: Candidate Generation & Scoring
+3. Iterative Thought Layer: Candidate Generation & Scoring
 -----------------------------------------------------------
 
 Seed Context: Use enriched context output of PFC-1.
 
 Candidate Generation:
 
--   Generate NN diverse thought candidates cici via LLM decoding styles:
+-   Generate N diverse thought candidates c_i via LLM decoding styles:
 
-    styles={literal,formal,terse,abductive,empathetic}styles={literal,formal,terse,abductive,empathetic}
--   For each style styleistylei:
+    styles = {literal, formal, terse, abductive, empathetic}
 
-    ci=LLM.generate(enriched_context,stylei)ci=LLM.generate(enriched_context,stylei)
+-   For each style style_i:
+
+    c_i = LLM.generate(enriched_context, style_i)
 
 Feature Extraction per Candidate:
 
--   coherence(ci)coherence(ci): Estimated semantic coherence vs context via entailment or internal LLM self-rating.
+-   coherence(c_i): Estimated semantic coherence vs context via entailment or internal self-rating.
 
--   identity_coherence(ci)identity_coherence(ci): Cosine similarity with current self-model descriptor zselfzself.
+-   identity_coherence(c_i): Cosine similarity with current self-model descriptor z_self.
 
--   task_utility(ci)task_utility(ci): Heuristic alignment with current goals.
+-   task_utility(c_i): Heuristic alignment with current goals.
 
--   novelty(ci)novelty(ci): Embedding-space distance from recent thought vectors.
+-   novelty(c_i): Embedding-space distance from recent thought vectors.
 
--   epistemic_gain(ci)epistemic_gain(ci): Predicted reduction in uncertainty.
+-   epistemic_gain(c_i): Predicted reduction in uncertainty.
 
--   safety(ci)safety(ci): Toxicity/hallucination flag score from constitutional safety checks.
+-   safety(c_i): Toxicity/hallucination flag score from constitutional safety checks.
 
--   calibration_gap(ci)calibration_gap(ci): Difference between generated likelihood vs actual confidence calibration.
+-   calibration_gap(c_i): Difference between generated likelihood vs actual confidence calibration.
 
-Neuromodulated Scoring Function:
+Neuromodulated Scoring Function (cleaned):
 
-score(ci)=wDA×novelty+wEPI×epistemic_gain+wTASK×task_utility+wSOC×prosocial_prior+wID×identity_coherence-wSAFE×safety_penaltyscore(ci)=wDA×novelty+wEPI×epistemic_gain+wTASK×task_utility+wSOC×prosocial_prior+wID×identity_coherence-wSAFE×safety_penalty
+-   score(c_i) = w_DA×novelty + w_EPI×epistemic_gain + w_TASK×task_utility + w_SOC×prosocial_prior + w_ID×identity_coherence − w_SAFE×safety_penalty
 
-where weights wkwk dynamically depend on neuromodulator vector:
+where weights w_k dynamically depend on neuromodulator vector:
 
-μ={DA,5HT,NE,OXT,TST}∈5[1]μ={DA,5HT,NE,OXT,TST}∈5[1]
+-   μ = {DA, 5HT, NE, OXT, TST}
 
 Iterative Refinement Loop:
 
--   Initialize context0=enriched_contextcontext0=enriched_context.
+-   Initialize context_0 = enriched_context.
 
--   For t=0,1,...t=0,1,...:
+-   For t = 0, 1, ...:
 
-    -   Generate candidates candst=LLM.generate(contextt,Nstyles)candst=LLM.generate(contextt,Nstyles).
+    -   Generate candidates cands_t = LLM.generate(context_t, N_styles).
 
-    -   Score candidates st=score(candst,μ)st=score(candst,μ).
+    -   Score candidates s_t = score(cands_t, μ).
 
-    -   Select top-1 candidate top1ttop1t.
+    -   Select top-1 candidate top1_t.
 
-    -   Refine context:
+    -   Refine context: context_{t+1} = context_t ⊕ top1_t
 
-        contextt+1=contextt⊕top1tcontextt+1=contextt⊕top1t
 -   Loop terminates if any:
 
-    -   top1t=top1t-ktop1t=top1t-k stable for kstablekstable cycles.
+    -   top1_t = top1_{t−k} stable for k cycles.
 
-    -   Marginal score improvement <ϵ<ϵ.
+    -   Marginal score improvement < ε.
 
     -   Safety or computational budget exhausted.
 
 -   Output final scored thought chain:
 
-    thought_chainpreHC←best_chain(cands∗)thought_chainpreHC←best_chain(cands∗)
+    thought_chain_preHC ← best_chain(cands_*)
 
-* * * * *
+*****
 
-4\. DMN Binding and Hippocampal (HC) Expansion
+4. DMN Binding and Hippocampal (HC) Expansion
 ----------------------------------------------
 
 -   Bind thought chain, sensory embeddings, self-model, and memory snippets into global workspace latent vector:
 
-    bt=workspace.bind(zv,zp,thought_chainpreHC,zself,mem.peeksmall()bt=workspace.bind(zv,zp,thought_chainpreHC,zself,mem.peeksmall()
--   Feed btbt to HC for associative expansion:
+    b_t = workspace.bind(zv, zp, thought_chain_preHC, z_self, mem.peek_small())
+
+-   Feed b_t to HC for associative expansion:
 
     -   Conduct spreading activation to retrieve:
 
@@ -415,14 +427,14 @@ Iterative Refinement Loop:
 
 -   Output expanded thought graph:
 
-    expanded_graph=hc.expand(bt)expanded_graph=hc.expand(bt)
+    expanded_graph = hc.expand(b_t)
 
-* * * * *
+*****
 
-5\. Ventral Striatum (VS) Exploration and Salience Tagging
+5. Ventral Striatum (VS) Exploration and Salience Tagging
 ----------------------------------------------------------
 
--   Explore candidate paths on expanded_graphexpanded_graph using a beam search or constrained graph walks.
+-   Explore candidate paths on expanded_graph using a beam search or constrained graph walks.
 
 -   Parameters dynamically modulated by norepinephrine (NE) and other neuromodulators:
 
@@ -430,17 +442,19 @@ Iterative Refinement Loop:
 
     -   Low NE broadens beam to encourage exploration.
 
--   For each candidate path pp, compute:
+-   For each candidate path p, compute:
 
-    features(p)={novelty,affective_tags,task_relevance,uncertainty_drop}features(p)={novelty,affective_tags,task_relevance,uncertainty_drop}
--   Path value is neuromodulator-weighted sum minus safety penalty:
+    features(p) = {novelty, affective_tags, task_relevance, uncertainty_drop}
 
-    val(p)=∑kwk(μ)×featuresk(p)-safety_penalty(p)val(p)=k∑wk(μ)×featuresk(p)-safety_penalty(p)
+-   Path value (cleaned):
+
+    val(p) = Σ_k w_k(μ) × features_k(p) − safety_penalty(p)
+
 -   Salience vector attaches novelty and reward anticipation scores to candidates.
 
-* * * * *
+*****
 
-6\. PFC-2 (Final Thought/Action Selection)
+6. PFC-2 (Final Thought/Action Selection)
 ------------------------------------------
 
 -   Receives candidate paths and their value scores from VS.
@@ -455,12 +469,12 @@ Iterative Refinement Loop:
 
     -   External actions (speech, behaviors).
 
-* * * * *
+*****
 
-7\. Nucleus Accumbens (NAcc) Reward Tagging and Persistence
+7. Nucleus Accumbens (NAcc) Reward Tagging and Persistence
 -----------------------------------------------------------
 
--   Tag the chosen chain with reward and persistence according to neuromodulatory state μμ:
+-   Tag the chosen chain with reward and persistence according to neuromodulatory state μ:
 
     -   Dopamine (DA) enhances reward signals.
 
@@ -472,41 +486,44 @@ Iterative Refinement Loop:
 
 -   Trigger symbolic abstraction if repetition statistics exceed thresholds.
 
-* * * * *
+*****
 
-8\. Memory Write and Narrative Update
+8. Memory Write and Narrative Update
 -------------------------------------
 
 -   Store scenes from chosen chain and corresponding sensor states:
 
-    mem.write(scene,tags=reward_tags,outcome)mem.write(scene,tags=reward_tags,outcome)
+    mem.write(scene, tags=reward_tags, outcome)
+
 -   Append a narrative summary extending mind-wandering windows for autobiographical integration.
 
-* * * * *
+*****
 
-9\. World Model & Self-Model Update
+9. World Model & Self-Model Update
 -----------------------------------
 
--   Update world state stst using RSSM (Recurrent State Space Model):
+-   Update world state s_t using RSSM (Recurrent State Space Model):
 
-    st=rssm.update({zv,zp},action=chosen_external_action)st=rssm.update({zv,zp},action=chosen_external_action)
--   Self-model zselfzself is updated by:
+    s_t = rssm.update({zv, zp}, action = chosen_external_action)
 
-    -   Exponential Moving Average (EMA) over recent DMN workspace latent vectors btbt.
+-   Self-model z_self is updated by:
 
-    -   Learned gated recurrent unit (GRU) over narrative context and prediction error signals, modulated by μμ.
+    -   Exponential Moving Average (EMA) over recent DMN workspace latent vectors b_t.
 
-* * * * *
+    -   Learned gated recurrent unit (GRU) over narrative context and prediction error signals, modulated by μ.
 
-10\. Mind-Wandering Micro-Loop (Gated by Neuromodulators)
+*****
+
+10. Mind-Wandering Micro-Loop (Gated by Neuromodulators)
 ---------------------------------------------------------
 
 -   Condition for entry:
 
-    (5HT>θreflect∧exteroceptive_demand≈0)∨uncertainty>τ(5HT>θreflect∧exteroceptive_demand≈0)∨uncertainty>τ
+    (5HT > θ_reflect ∧ exteroceptive_demand ≈ 0) ∨ uncertainty > τ
+
 -   Executes recursive internal loop without external action outputs:
 
-    1.  Generate self-queries via LLM using current zselfzself.
+    1.  Generate self-queries via LLM using current z_self.
 
     2.  Perform internal simulations via RSSM rollouts.
 
@@ -526,52 +543,56 @@ Iterative Refinement Loop:
 
     -   5HT biases: Favor approaches through safe, positive, and low-risk thought space.
 
-* * * * *
+*****
 
-11\. Recursive Re-Entry
+11. Recursive Re-Entry
 -----------------------
 
 -   Feed chosen thought chain internally as next DMN input (inner speech):
 
-    input_textt+1←merge(chosen_chain,fresh_sensory_text)input_textt+1←merge(chosen_chain,fresh_sensory_text)
+    input_text_{t+1} ← merge(chosen_chain, fresh_sensory_text)
+
 -   DMN loop continues perpetually, maintaining continuous conscious cognition.
 
-* * * * *
+*****
 
 II. Memory Consolidation and Symbolic Abstraction
 -------------------------------------------------
 
-1\. Duplicate Removal and Merging
+1. Duplicate Removal and Merging
 ---------------------------------
 
 -   Identify near-duplicate memory nodes:
 
-    sim(nodei,nodej)>θdupsim(nodei,nodej)>θdup
+    sim(node_i, node_j) > θ_dup
+
 -   Merge duplicates preserving frequency information tracking occurrence counts and context variability.
 
-* * * * *
+*****
 
-2\. Causal Edge Extraction
+2. Causal Edge Extraction
 --------------------------
 
 -   Detect temporal and contextual action → reaction pairs from sequences:
 
-    NodeA→actionNodeBNodeAactionNodeB
+    NodeA →action→ NodeB
+
 -   Store explicit causal edges with timestamps and confidence.
 
-* * * * *
+*****
 
-3\. Markov Chain Construction
+3. Markov Chain Construction
 -----------------------------
 
--   From sequences extract states and probabilistic transitions:
+-   From sequences extract states and probabilistic transitions (cleaned):
 
-    P(next_state=sj∣current_state=si)=count(i→j)∑kcount(i→k)P(next_state=sj∣current_state=si)=∑kcount(i→k)count(i→j)
+    P(next_state = s_j | current_state = s_i) = count(i → j) / Σ_k count(i → k)
+
 -   Update probabilities incrementally on consolidation.
 
-* * * * *
+*****
 
-4\. Symbolic Abstraction
+4. Symbolic Abstraction
 ------------------------
 
 -   Detect frequent patterns or chains of experiences exceeding predefined thresholds.
@@ -580,26 +601,26 @@ II. Memory Consolidation and Symbolic Abstraction
 
 -   Attach probability maps expressing uncertainty over possible outcomes:
 
-Symbol: Insult→{NegativeReaction:0.97,PositiveReaction:0.03}Symbol: Insult→{NegativeReaction:0.97,PositiveReaction:0.03}
+    Symbol: Insult → {NegativeReaction: 0.97, PositiveReaction: 0.03}
 
-* * * * *
+*****
 
-5\. Hierarchical Transfer
+5. Hierarchical Transfer
 -------------------------
 
 -   Episodic memories → Semantic knowledge (conceptual, abstracted rules) → Autobiographical memory (identity narrative).
 
 -   This hierarchy enables the ACI to reflectively reason about its past and self.
 
-* * * * *
+*****
 
 Summary of Neuromodulator Impact on Algorithms
 ==============================================
 
 | Neuromodulator | Algorithmic Effects |
 | --- | --- |
-| Dopamine (DA) | Increases novelty weight wDAwDA, exploration budget, consolidation priority, reward signaling; promotes broad associative search ("panning"). |
-| Serotonin (5HT) | Opens mind-wandering gate; raises safety penalty wSAFEwSAFE; favors positive/safe memory paths; decreases risk appetite. |
+| Dopamine (DA) | Increases novelty weight w_DA, exploration budget, consolidation priority, reward signaling; promotes broad associative search ("panning"). |
+| Serotonin (5HT) | Opens mind-wandering gate; raises safety penalty w_SAFE; favors positive/safe memory paths; decreases risk appetite. |
 | Norepinephrine (NE) | Controls beam search width and depth (focus vs exploration); increases urgency and search depth; biases toward highly relevant/urgent memories and thoughts. |
-| Oxytocin (OXT) | Heightens prosocial prior wSOCwSOC, boosts social memory recall and identity coherence weight wIDwID. |
+| Oxytocin (OXT) | Heightens prosocial prior w_SOC, boosts social memory recall and identity coherence weight w_ID. |
 | Testosterone (TST) | Increases assertive, goal-seeking weights; raises cost-delay penalties; counterbalanced by serotonin for risk management. |
