@@ -874,88 +874,149 @@ Summary of Neuromodulator Impact on Algorithms
 | Testosterone (TST) | Increases assertive, goal-seeking weights; raises cost-delay penalties; counterbalanced by serotonin for risk management. |
 
 ## Notes
-### DMN Loop CFG Yaml Example
+### DMN Loop CFG Yaml Sketch
 ```yaml
-DMN_CFG:
-  "3.1_Input_Gathering":
-    role: "Gather sensory input and preprocess into latent embeddings"
-    inputs: ["vision(RGBD)", "audio(waveform)", "proprioception(state)"]
-    outputs: ["zv", "za", "zp", "assoc_thoughts", "input_text"]
-    constraints: ["cross-modal binding", "scene summarization"]
+nodes:
+  "0.1":
+    name: "Sensory Cortex"
+    function: "Receives real-world sensory input"
+    in:
+      - "10.9"     # Recursive Re-Entry -> next cycle sensory capture
+    out:
+      - "0.2"
 
-  "3.2_MDN_Parsing":
-    role: "Parse input into structured Abstract Syntax Tree (AST)"
-    inputs: ["input_text"]
-    outputs: ["AST(nodes with semantic labels)"]
-    constraints: ["semantic tagging", "AST consistency"]
+  "0.2":
+    name: "Associative Cortex"
+    function: "Transforms sensory data into latent embeddings and scene snippets"
+    in:
+      - "0.1"
+    out:
+      - "1.1"
 
-  "3.3_PFC1_Dispatch":
-    role: "Execute subtasks mapped from AST nodes"
-    inputs: ["AST", "memory_graph", "tools(sympy, retrievers)"]
-    outputs: ["enriched_context"]
-    constraints: ["symbolic evaluation", "memory retrieval", "empathetic reasoning"]
+  "1.1":
+    name: "MDN Parsing"
+    function: "Parses input text into AST with semantic tags"
+    in:
+      - "0.2"
+    out:
+      - "2.1"
 
-  "3.4_Candidate_Generation":
-    role: "Generate N diverse thought candidates"
-    inputs: ["enriched_context", "z_self", "goals"]
-    outputs: ["candidate_thoughts"]
-    constraints: ["novelty", "utility", "coherence", "diversity of styles"]
+  "2.1":
+    name: "PFC-1 Dispatch"
+    function: "Executes AST subtasks: math eval, memory recall, social/explain; merges enriched context"
+    in:
+      - "1.1"
+    out:
+      - "3.1"
 
-  "3.5_Hippocampal_Expansion":
-    role: "Expand thought context into associative/hypothetical variants"
-    inputs: ["b_t = bind(zv, zp, candidate_chain, z_self, mem.peek_small())"]
-    outputs: ["expanded_graph"]
-    constraints: ["retrieve temporally, semantically, causally related nodes", "counterfactual generation"]
+  "3.1":
+    name: "Candidate Generation"
+    function: "Generates diverse thought candidates and pre-scores them"
+    in:
+      - "2.1"
+    out:
+      - "4.1"
 
-  "3.6_Salience_Valuation":
-    role: "Evaluate candidates by novelty, affect, and goal relevance"
-    inputs: ["expanded_graph", "μ (neuromodulator vector)"]
-    outputs: ["valued_paths(with salience scores)"]
-    constraints: ["novelty detection", "affective tagging", "task relevance", "safety penalties"]
+  "4.1":
+    name: "HC Binding/Expansion"
+    function: "Binds workspace b_t; expands with associative and counterfactual variants"
+    in:
+      - "3.1"
+    out:
+      - "5.1"
 
-  "3.7_PFC2_Selection":
-    role: "Collapse candidates into coherent chosen thought chain"
-    inputs: ["valued_paths"]
-    outputs: ["chosen_chain"]
-    constraints: ["safety filters", "coherence checks", "confidence scoring"]
+  "5.1":
+    name: "VS Salience Valuation"
+    function: "Values candidate paths by novelty, affect, relevance, uncertainty drop"
+    in:
+      - "4.1"
+    out:
+      - "6.1"
 
-  "3.8_NAcc_Reward_Tagging":
-    role: "Apply reward tagging and persistence decisions"
-    inputs: ["chosen_chain", "μ"]
-    outputs: ["reinforced_chain", "persistence_flags"]
-    constraints: ["dopamine reward", "serotonin persistence", "urgency adjustments"]
+  "6.1":
+    name: "PFC-2 Selection"
+    function: "Prunes, collapses to a coherent safe chain; assigns confidence"
+    in:
+      - "5.1"
+    out:
+      - "7.1"   # normal forward
+      - "3.1"   # regeneration on fail/low confidence
 
-  "3.9_Memory_Write_Narrative":
-    role: "Persist chosen thought into episodic memory and update narrative"
-    inputs: ["reinforced_chain", "sensory_snapshots", "μ", "z_self", "goals"]
-    outputs: ["MemoryRecord", "NarrativeRecord"]
-    constraints: ["multi-relational embedding update", "autobiographical snapshot"]
+  "7.1":
+    name: "NAcc Reward Tagging"
+    function: "Applies reward/persistence tagging; urgency adjustments"
+    in:
+      - "6.1"
+    out:
+      - "8.1"
 
-  "3.10_World_Self_Model_Update":
-    role: "Update world and self-model embeddings"
-    inputs: ["zv", "zp", "chosen_chain", "b_t", "narrative_context", "μ"]
-    outputs: ["updated_world_state", "updated_z_self"]
-    constraints: ["RSSM update", "EMA self-model embedding"]
+  "8.1":
+    name: "Memory Write & Narrative"
+    function: "Persists episode; updates multi-relational embeddings; conditional narrative summary"
+    in:
+      - "7.1"
+    out:
+      - "9.1"
 
-  "3.11_Mind_Wandering":
-    role: "Perform reflection and introspection loop without external action"
-    inputs: ["z_self", "expanded_memory_graph", "μ"]
-    outputs: ["introspective_chains"]
-    constraints: ["self-query generation", "RSSM simulation", "counterfactual exploration"]
+  "9.1":
+    name: "World & Self-Model Update"
+    function: "RSSM world update; EMA/GRU self-model update"
+    in:
+      - "8.1"
+    out:
+      - "10.1"  # optional mind-wandering if gated
+      - "10.9"  # else directly to re-entry
 
-  "3.12_Recursive_ReEntry":
-    role: "Feed chosen chain back into DMN as next cycle input"
-    inputs: ["chosen_chain", "fresh_sensory_text"]
-    outputs: ["next_cycle_input_text"]
-    constraints: ["maintain continuous cognition"]
+  "10.1":
+    name: "Mind-Wandering Loop"
+    function: "Internal self-queries, simulations, memory expansions and selection (no external action)"
+    in:
+      - "9.1"
+    out:
+      - "10.9"
 
-  "11_Sleep_Garbage_Collection":
-    role: "Enter sleep state when histamine drops; perform consolidation and GC"
-    inputs: ["MemoryGraph", "NarrativeChain", "histamine_level", "μ"]
-    outputs: ["consolidated_memory_graph", "compressed_autobiographical narratives"]
-    constraints: ["purge low-salience memories", "episodic→semantic transfer", "synaptic downscaling", "circadian wake by histamine threshold"]
+  "10.9":
+    name: "Recursive Re-Entry"
+    function: "Feeds chosen chain as inner speech into next cycle input"
+    in:
+      - "9.1"
+      - "10.1"
+    out:
+      - "0.1"
+
+  "11.1":
+    name: "Sleep / Garbage Collection"
+    function: "Gated sleep: GC, replay, consolidation; wake when HA/ORX cross threshold"
+    in:
+      - "0.1"
+      - "1.1"
+      - "2.1"
+      - "3.1"
+      - "4.1"
+      - "5.1"
+      - "6.1"
+      - "7.1"
+      - "8.1"
+      - "9.1"
+      - "10.1"
+      - "10.9"
+    out:
+      - "0.1"
+
+guards:
+  - at: "6.1"
+    condition: "safety_fail OR coherence_fail OR confidence < θ_conf"
+    action: "route out to 3.1 for regeneration"
+
+  - at: "9.1"
+    condition: "(5HT high AND low external demand) OR uncertainty > τ"
+    action: "route out to 10.1 (mind-wandering)"
+    else: "route out to 10.9"
+
+  - global: "sleep_gate"
+    condition: "HA < θ_sleep OR ORX low"
+    action: "route from current node to 11.1 (sleep/GC); upon HA > θ_wake AND ORX sufficient, route 11.1 -> 0.1"
 ```
-
 ## Future Implementation Ideas and Details
 ### Homeostasis
 
