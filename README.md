@@ -41,7 +41,7 @@ Our approach models ACI architecture on key human brain systems known to underpi
 
 -   Nucleus Accumbens (NAcc): Applies reward tagging to chosen cognitive/action sequences, promoting persistence and triggering memory consolidation and symbolic abstraction.
 
--   Homeostatic Neuromodulator System: Modulates global and local process parameters through simulated neurotransmitters (dopamine, serotonin, norepinephrine, oxytocin, testosterone), controlling exploration/exploitation balance, risk appetite, social priors, and urgency.
+-   Homeostatic Neuromodulator System: Modulates global and local process parameters through simulated neurotransmitters (dopamine, serotonin, norepinephrine, oxytocin, testosterone, histamin, orexin), controlling exploration/exploitation balance, risk appetite, social priors, wakefulness, tiredness, and urgency.
 
 *****
 
@@ -203,9 +203,98 @@ The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, re
 3.9. Memory Write & Autobiographical Narrative
 ----------------------------------------------
 
--   Persist scenes and chosen thoughts into the multidimensional memory graph.
+1. Episodic Memory Storage   
+   Write chosen chain to MemoryTape.  
+   Link edges through MemoryGraph (temporal, similarity, causal, goal relevance).
 
--   Append narrative summaries that extend mind-wandering windows and support self-continuity.
+2. Multi-Relational Embedding Space  
+   Every time we add edges, we encode the updated working memory graph into a latent vector space:  
+
+    Each MemoryRecord has:  
+    content_embedding: semantic representation (text, sensor fusion, context).  
+    Each edge type is assigned a transformation vector or operator:  
+    ```
+    T_temporal = unit displacement on time axis.  
+    T_similarity = close embedding alignment.  
+    T_causal = directional translation (TransE-style: cause + relation ≈ effect).  
+    T_relevance = weighted axis conditioned on current goal embedding. 
+    ``` 
+    Combined embedding:  
+    `z_node* = content_embedding ⊕ Σ (relation_weight × T_relation)`  
+    > This means nodes aren’t just content, they are content + relational signature.  
+    This gives us a multi-relational latent manifold where:  
+    Radius search retrieves nodes connected by one type of relation (similarity sphere).  
+    Higher-dimensional sphere query retrieves clusters that satisfy all relations simultaneously (similar, temporally close, causally relevant, and salient).
+
+    👁 Analogy: This is like mixing word embeddings with knowledge graph embeddings (TransE/RotatE/ComplEx) and then projecting them into a single working latent space for the HC to search.
+
+3. Autobiographical Narrative Storage (expanded)
+    Narrative nodes now also get multi-relational embeddings:
+
+    Use a set transformer or GRU over the embeddings of all linked episodic memories.
+    Store narrative as:  
+    summary_text (LLM-generated).  
+    narrative_embedding = pooled latent vector representing both memories + relation types.  
+    
+    This allows queries like:  
+    > “Find all narratives in which I was under social stress and learned something new.”
+    
+    By executing a high-dimensional sphere query in relation space combining  
+    `tag=stress, relation=causality, and goal=learning.`
+    
+4. Algorithm Insert (Updated 3.9 Section)
+    python  
+
+```python
+def memory_write_and_narrative(scene, chosen_chain, μ, z_self, goals):
+    # Step 1. Storage
+    mem_id = MemoryTape.append(
+        timestamp=now(),
+        content=chosen_chain,
+        sensory_snapshot=scene,
+        content_embedding=encode(scene, chosen_chain),
+        tags={μ, goals}
+    )
+
+    # Add graph edges
+    MemoryGraph.add_temporal_edge(mem_id-1, mem_id)
+    MemoryGraph.add_similarity_edges(mem_id, SIM_RADIUS)
+    MemoryGraph.add_goal_edges(mem_id, goals)
+    
+    if detects_action_outcome_pair(chosen_chain):
+        MemoryGraph.add_causal_edge(action_id, outcome_id)
+
+    # Step 2. Multi-relational embedding update
+    rel_vector = combine_relations(mem_id, MemoryGraph)
+    latent_embedding = mem_id.content_embedding + rel_vector
+    MemoryGraph.update_embedding(mem_id, latent_embedding)
+
+    # Step 3. Narrative summary
+    recent_ids = MemoryTape.last(N_CHUNK)
+    if summarize_condition(recent_ids):
+        summary, narrative_embedding = generate_narrative(recent_ids, z_self)
+        NarrativeChain.add(
+            time_range=(recent_ids[0].t, recent_ids[-1].t),
+            linked_memories=recent_ids,
+            summary_text=summary,
+            narrative_embedding=narrative_embedding,
+            self_model_snapshot=z_self,
+            goals_snapshot=goals,
+            μ_snapshot=μ
+        )
+
+    return mem_id
+```  
+  
+
+> ✅ Perplexity: One unified latent space means the hippocampus doesn’t need to separately search similarity, causality, time, goals — it just queries a manifold ball.
+>
+> Sphere queries → HC.expand(b_t, radius=r, relation_weights=W) can dynamically tune which relations matter (like “bias toward causality vs similarity”), modulated by neuromodulators.
+>
+> Narrative embeddings make autobiographical reasoning as searchable as episodic memories.
+>
+> Autobiographical records can be clustered → the agent can ask “show me all phases of life where I pursued exploration goals.”
+
 
 3.10. World Model and Self-Model Update
 ---------------------------------------
@@ -234,7 +323,7 @@ The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, re
 
 *****
 
-4. Memory Consolidation: Probabilistic Knowledge Formation
+1. Memory Consolidation: Probabilistic Knowledge Formation
 -----------------------------------------------------------
 
 Memory consolidation transforms raw episodic experience graphs into structured symbolic knowledge, enabling abstract cognition:
@@ -254,6 +343,50 @@ Memory consolidation transforms raw episodic experience graphs into structured 
 -   Hierarchical Transfer: Gradually move from episodic experiences to semantic knowledge and finally into an autobiographical narrative self-model, forming the backbone of introspective identity.
 
 *****
+
+## Additional Introspective Context: DMN Control Flow Graph (CFG)
+
+One extension to the ACI design is to explicitly represent the **DMN loop as a Control Flow Graph (CFG)**.  
+This CFG encodes each step of the algorithm as a *node with identifiers, inputs, outputs, and function role*.  
+
+By maintaining a structured CFG definition (e.g., in YAML), the system can:
+
+- **Feed active CFG node tags into LLM invocations** as *meta-context*, so the model always knows:
+  - *Which stage of the DMN loop it is operating in.*
+  - *What its current purpose is (e.g., hypothesis generation vs salience valuation).*
+  - *What constraints or output type is expected.*
+
+- **Enhance process self-awareness**:
+  - The system carries "awareness" of being in *Candidate Generation*, *HC Expansion*, or *VS Valuation* phase.
+  - Prevents role confusion and encourages consistent LLM behavior.
+
+- **Enable explicit traceability**:
+  - Each memory node or thought can be tagged with the CFG node ID that produced it.
+  - Later, autobiographical narrative can reflect not just *what was thought*, but *how it was produced*.
+
+- **Stabilize cognitive dynamics**:
+  - Feeding CFG meta information constrains the LLM to follow algorithmic intent.
+  - Acts as a role-encoding signal, similar to "system prompts" that anchor behavior.
+
+- **Provide a basis for metacognitive reasoning**:
+  - By referring to its own CFG, the system can simulate/debug itself:
+    > "This candidate emerged during PFC-1 hypothesis expansion while DA was high, but it was pruned at VS valuation."
+
+---
+
+When invoking an LLM sub-process (e.g., to generate a thought, evaluate coherence, or narrativize memory),  
+prepend a meta-context header:
+
+```yaml
+DMN_State:
+  Node: "3.4_Candidate_Generation"
+  Purpose: "Generate abductive hypotheses"
+  Neuromodulators: {DA: 1, NE: 0.7, 5HT: 0.8}
+```
+
+This makes the LLM *process-aware* of **where it is in the loop** and **what its functional role is**.
+
+---
 
 Summary
 -------
@@ -299,6 +432,7 @@ This blueprint lays out a detailed conceptual and algorithmic architecture for a
 -   Parse input_text into an Abstract Syntax Tree (AST):
 
     AST ← mdn.parse(input_text)
+    >   Use regex extraction to extract mathematical expressions.
 
 -   Tag AST nodes with semantic labels:
 
@@ -314,8 +448,6 @@ This blueprint lays out a detailed conceptual and algorithmic architecture for a
 For each AST node:
 
 -   Math Nodes:
-
-    -   Use regex extraction to extract expressions.
 
     -   Evaluate symbolically and numerically with SymPy engine.
 
@@ -406,30 +538,77 @@ Iterative Refinement Loop:
 
 *****
 
-4. DMN Binding and Hippocampal (HC) Expansion
-----------------------------------------------
 
--   Bind thought chain, sensory embeddings, self-model, and memory snippets into global workspace latent vector:
+- **Bind Workspace Context**
 
-    b_t = workspace.bind(zv, zp, thought_chain_preHC, z_self, mem.peek_small())
+  Bind thought chain, sensory embeddings, self-model, and memory snippets into a global workspace latent vector:
 
--   Feed b_t to HC for associative expansion:
+  ```python
+  b_t = workspace.bind(zv, zp, thought_chain_preHC, z_self, mem.peek_small())
+  ```
 
-    -   Conduct spreading activation to retrieve:
+  This latent vector `b_t` represents the current conscious context.
 
-        -   Temporally adjacent memories.
+---
 
-        -   Semantically similar nodes.
+- **HC Expansion Using High-Dimensional Latent Geometry**
 
-        -   Causally relevant episodes.
+  Instead of symbolic spreading or beam walks, HC queries the *multi-relational latent space* directly:
 
-        -   Hypothetical variants for counterfactual thinking.
+  1. **Define Relation Operators**
+     
+     Each relation type is represented as a displacement vector or transformation in latent space:
+     - `T_temporal`
+     - `T_similarity`
+     - `T_causal`
+     - `T_relevance`
 
--   Output expanded thought graph:
+  2. **Compose Multi-Relation Query Vector**
+     
+     ```python
+     q = b_t + α·T_temporal + β·T_similarity + γ·T_causal + δ·T_relevance
+     ```
+     
+     Relation weights `{α, β, γ, δ}` are dynamically modulated by neuromodulator state μ:
+     - DA (dopamine): ↑ novelty & similarity bias  
+     - NE (norepinephrine): ↑ causality & urgency  
+     - 5HT (serotonin): ↑ safe & prosocial relevance  
 
-    expanded_graph = hc.expand(b_t)
+  3. **Hypersphere / Multi-Radius Search**
+  
+     The HC performs radius queries in latent space instead of graph walks:
 
-*****
+     ```python
+     candidates = VectorDB.radius_search(center=q, radius=R)
+     ```
+
+     Or multi-radius queries across different relation axes:
+     - Temporal window (time adjacency)  
+     - Semantic radius (content similarity)  
+     - Causal projection cone (directed offsets)  
+     - Goal alignment radius (task relevance)  
+
+     Results are merged and weighted according to relation-type proximity.
+
+  4. **Generate Hypothetical Variants**
+     
+     For each retrieved candidate, HC can perturb embeddings to simulate counterfactuals:
+     
+     ```python
+     hypothetical = candidate_embedding + δ·perturb(goal_focus)
+     ```
+     
+     These virtual nodes represent “what if” alternatives.
+
+  5. **Assemble Expanded Thought Graph**
+     
+     ```python
+     expanded_graph = build_subgraph(candidates + hypotheticals, relation_weights={α,β,γ,δ})
+     ```
+     
+     Edges are weighted by geometric closeness to `q`. Virtual counterfactual nodes are flagged but available for downstream exploration.
+
+
 
 5. Ventral Striatum (VS) Exploration and Salience Tagging
 ----------------------------------------------------------
@@ -543,7 +722,6 @@ Iterative Refinement Loop:
 
     -   5HT biases: Favor approaches through safe, positive, and low-risk thought space.
 
-*****
 
 11. Recursive Re-Entry
 -----------------------
@@ -554,7 +732,6 @@ Iterative Refinement Loop:
 
 -   DMN loop continues perpetually, maintaining continuous conscious cognition.
 
-*****
 
 II. Memory Consolidation and Symbolic Abstraction
 -------------------------------------------------
@@ -614,6 +791,77 @@ II. Memory Consolidation and Symbolic Abstraction
 
 *****
 
+11. Sleep / Garbage Collection
+-------------------------------
+
+* * * * *
+
+-   Neurochemical Gate: Histamine (HA)
+
+    -   Awake state persistence is driven by histamine activity in the basal forebrain (H1 receptor activation).
+
+    -   During "wake cycles," histamine is gradually dismantled via MAOA metabolism.
+
+    -   Once H1 activity drops below a critical threshold, the DMN loop transitions into a sleep-like state.
+
+-   Sleep Phase Dynamics:
+
+    -   Exteroceptive input (sensory cortices) and associative cortices are gated down (low-pass filtered).
+
+    -   Internal Default Mode + Hippocampal replay dominate activity.
+
+    -   Processes during this phase:
+
+        1.  Garbage Collection (GC):
+
+            -   Purging low-value / redundant memory traces.
+
+            -   Decay of ephemeral or low-salience nodes not consolidated.
+
+        2.  Memory Consolidation:
+
+            -   Episodic → Semantic transfer.
+
+            -   Narrative updates.
+
+            -   Symbolic abstraction of repeated event-sequences.
+
+            -   Updating long-term Markovian predictive models of causal structure.
+
+        3.  Replay & Reweighting:
+
+            -   Hippocampal memory replay strengthens salient edges.
+
+            -   Downscaling of irrelevant activations ("synaptic homeostasis").
+
+-   Wake Transition:
+
+    -   After consolidation completes beyond a set threshold (GC budget spent/time window elapsed):
+
+        -   The neurochemical module begins to re-secrete histamine gradually.
+
+        -   When histamine concentration crosses the wake-threshold, the model transitions back to the wake-loop.
+
+
+🔹 Integration notes
+====================
+
+This stage would come after 11. Recursive Re-entry, as a *meta-gate* on the perpetual cycle:
+
+-   Active Loop (Wake phase): 5--20 Hz DMN operation.
+
+-   Sleep Loop (GC phase): Low input DMN, replay-driven consolidation.
+
+-   Algorithmic Role:
+
+    -   Provides bounded forgetting (keeps memory from overflow).
+
+    -   Enforces compression & abstraction of past day's experiences.
+
+    -   Enhances narrative continuity (link chunks into autobiographical "chapters").
+
+    -   Models biologically inspired circadian ground-truth gate (histamine/MAOA as up--down toggle).  
+    -   
 Summary of Neuromodulator Impact on Algorithms
 ==============================================
 
@@ -624,3 +872,356 @@ Summary of Neuromodulator Impact on Algorithms
 | Norepinephrine (NE) | Controls beam search width and depth (focus vs exploration); increases urgency and search depth; biases toward highly relevant/urgent memories and thoughts. |
 | Oxytocin (OXT) | Heightens prosocial prior w_SOC, boosts social memory recall and identity coherence weight w_ID. |
 | Testosterone (TST) | Increases assertive, goal-seeking weights; raises cost-delay penalties; counterbalanced by serotonin for risk management. |
+
+## Notes
+### DMN Loop CFG Yaml Example
+```yaml
+DMN_CFG:
+  "3.1_Input_Gathering":
+    role: "Gather sensory input and preprocess into latent embeddings"
+    inputs: ["vision(RGBD)", "audio(waveform)", "proprioception(state)"]
+    outputs: ["zv", "za", "zp", "assoc_thoughts", "input_text"]
+    constraints: ["cross-modal binding", "scene summarization"]
+
+  "3.2_MDN_Parsing":
+    role: "Parse input into structured Abstract Syntax Tree (AST)"
+    inputs: ["input_text"]
+    outputs: ["AST(nodes with semantic labels)"]
+    constraints: ["semantic tagging", "AST consistency"]
+
+  "3.3_PFC1_Dispatch":
+    role: "Execute subtasks mapped from AST nodes"
+    inputs: ["AST", "memory_graph", "tools(sympy, retrievers)"]
+    outputs: ["enriched_context"]
+    constraints: ["symbolic evaluation", "memory retrieval", "empathetic reasoning"]
+
+  "3.4_Candidate_Generation":
+    role: "Generate N diverse thought candidates"
+    inputs: ["enriched_context", "z_self", "goals"]
+    outputs: ["candidate_thoughts"]
+    constraints: ["novelty", "utility", "coherence", "diversity of styles"]
+
+  "3.5_Hippocampal_Expansion":
+    role: "Expand thought context into associative/hypothetical variants"
+    inputs: ["b_t = bind(zv, zp, candidate_chain, z_self, mem.peek_small())"]
+    outputs: ["expanded_graph"]
+    constraints: ["retrieve temporally, semantically, causally related nodes", "counterfactual generation"]
+
+  "3.6_Salience_Valuation":
+    role: "Evaluate candidates by novelty, affect, and goal relevance"
+    inputs: ["expanded_graph", "μ (neuromodulator vector)"]
+    outputs: ["valued_paths(with salience scores)"]
+    constraints: ["novelty detection", "affective tagging", "task relevance", "safety penalties"]
+
+  "3.7_PFC2_Selection":
+    role: "Collapse candidates into coherent chosen thought chain"
+    inputs: ["valued_paths"]
+    outputs: ["chosen_chain"]
+    constraints: ["safety filters", "coherence checks", "confidence scoring"]
+
+  "3.8_NAcc_Reward_Tagging":
+    role: "Apply reward tagging and persistence decisions"
+    inputs: ["chosen_chain", "μ"]
+    outputs: ["reinforced_chain", "persistence_flags"]
+    constraints: ["dopamine reward", "serotonin persistence", "urgency adjustments"]
+
+  "3.9_Memory_Write_Narrative":
+    role: "Persist chosen thought into episodic memory and update narrative"
+    inputs: ["reinforced_chain", "sensory_snapshots", "μ", "z_self", "goals"]
+    outputs: ["MemoryRecord", "NarrativeRecord"]
+    constraints: ["multi-relational embedding update", "autobiographical snapshot"]
+
+  "3.10_World_Self_Model_Update":
+    role: "Update world and self-model embeddings"
+    inputs: ["zv", "zp", "chosen_chain", "b_t", "narrative_context", "μ"]
+    outputs: ["updated_world_state", "updated_z_self"]
+    constraints: ["RSSM update", "EMA self-model embedding"]
+
+  "3.11_Mind_Wandering":
+    role: "Perform reflection and introspection loop without external action"
+    inputs: ["z_self", "expanded_memory_graph", "μ"]
+    outputs: ["introspective_chains"]
+    constraints: ["self-query generation", "RSSM simulation", "counterfactual exploration"]
+
+  "3.12_Recursive_ReEntry":
+    role: "Feed chosen chain back into DMN as next cycle input"
+    inputs: ["chosen_chain", "fresh_sensory_text"]
+    outputs: ["next_cycle_input_text"]
+    constraints: ["maintain continuous cognition"]
+
+  "11_Sleep_Garbage_Collection":
+    role: "Enter sleep state when histamine drops; perform consolidation and GC"
+    inputs: ["MemoryGraph", "NarrativeChain", "histamine_level", "μ"]
+    outputs: ["consolidated_memory_graph", "compressed_autobiographical narratives"]
+    constraints: ["purge low-salience memories", "episodic→semantic transfer", "synaptic downscaling", "circadian wake by histamine threshold"]
+```
+
+## Future Implementation Ideas and Details
+### Homeostasis
+
+-   Three learned maps per receptor type r in area a:
+
+    -   Density network: ρ̂r,a = fρ(ctx)
+
+    -   Sensitivity network: ŝr,a = fσ(ctx)
+
+    -   Release network at emitter e for NT n: r̂e,n = fr(ctx)
+
+    -   ctx can include: local NT levels, binding events, recent DMN node, neuromodulators μ, error signals, time-of-day, etc.
+
+-   Multi-scale efficiency:
+
+    -   Local biophysical efficiency: produce strong, well-modulated postsynaptic activity with minimal waste (low spillover, low unused capacity).
+
+    -   Mesoscale circuit efficiency: achieve stable, non-saturated dynamic range over time (no chronic ceiling/floor).
+
+    -   Cognitive (DMN) efficiency: improve downstream utility metrics (coherence, accuracy, safety, task reward, reduced uncertainty).
+
+Define signaling efficiency (per tick t, per area a, receptor type r)
+Let:
+
+-   B̄r,a: fraction of orthosteric sites effectively bound (0..1)
+
+-   S̄r,a: normalized postsynaptic activity from receptor NN after allosteric scaling (0..1)
+
+-   SatNTn,a: NT saturation at targets (fraction of NT beyond binding capacity)
+
+-   RangeUtilr,a: proportion of time recent S̄r,a stayed in a target operating window [θlow, θhigh]
+
+-   NoiseLeakr,a: activity explained by noise or unrelated inputs (proxy: variance unexplained by modeled inputs)
+
+-   EnergyCost: optional regularizer on release and density (L1/L2 on r̂ and ρ̂)
+
+Local efficiency (per receptor type r, area a)
+Efflocal = w1-S̄r,a + w2-RangeUtilr,a - w3-SatNTn,a - w4-NoiseLeakr,a - w5-EnergyCost
+
+Aggregate locally across receptors and areas:
+Efflocal_total = Σa Σr Efflocal(r,a)
+
+DMN-informed cognitive efficiency (global)
+Use live DMN metrics already computed in the loop:
+
+-   Coherence gain ΔC: improvement in coherence between successive thought states
+
+-   Task utility gain ΔU: change in task-aligned utility
+
+-   Uncertainty drop ΔH: reduction in epistemic uncertainty
+
+-   Safety compliance S: 1 - safety_penalty
+
+-   Calibration improvement ΔCal: reduced calibration gap
+    Effcog = v1-ΔC + v2-ΔU + v3-ΔH + v4-S + v5-ΔCal
+
+Overall signaling efficiency (to maximize)
+Efftotal = α-Efflocal_total + β-Effcog
+
+Optimization objective
+You can minimize a loss L = -Efftotal with optional stabilizers:
+L = -(α-Efflocal_total + β-Effcog) + λ1-Smooth(ρ̂, ŝ, r̂) + λ2-DriftPenalty + λ3-HomeostasisDeviation
+
+-   Smooth: penalize rapid changes (temporal derivative) to avoid instability.
+
+-   DriftPenalty: penalize long-term drift from physiological priors.
+
+-   HomeostasisDeviation: keep population averages in realistic ranges.
+
+What to backprop through
+
+-   fρ, fσ, fr (the density, sensitivity, release NNs): use gradients from L.
+
+-   Optionally, allow the protein's modulate function hyperparameters to learn (e.g., phase in sin/cos, slope in tanh) if you parametrize them.
+
+Which signals do you need?
+
+-   Not only NT saturation vs density. Include:
+
+    -   Bound/unbound ratios (B̄)
+
+    -   Postsynaptic activity S̄ and its variance
+
+    -   Operating-range utilization RangeUtil
+
+    -   Spillover/saturation SatNT
+
+    -   Allosteric context contribution
+
+    -   Energy cost proxies (release amount, receptor synthesis cost)
+
+    -   DMN global metrics (ΔC, ΔU, ΔH, S, ΔCal) pulled from your CFG-tagged nodes to attribute credit to neuromodulatory states that preceded those outcomes
+
+Attribution across time (credit assignment)
+
+-   Use short eligibility traces linking recent homeostatic states (ρ̂, ŝ, r̂ at t-k..t) to DMN outcomes at t..t+K.
+
+-   Alternatively, use a learned critic that predicts Effcog from μ, receptor states, and CFG node, and backprop prediction error.
+
+Minimal implementable formulae
+
+Local metrics
+
+-   Binding fraction: B̄r,a = bound_sites / total_sites
+
+-   Saturation: SatNTn,a = max(0, NT_available - NT_bound_capacity) / NT_available
+
+-   Range utilization: RangeUtilr,a = time_in[θlow, θhigh] / window
+
+-   Noise leak (proxy): NoiseLeakr,a = Var(S̄r,a | inputs)residual / Var(S̄r,a)
+
+DMN metrics (you already compute analogs)
+
+-   ΔC = C(t) - C(t-1)
+
+-   ΔU = U(t) - U(t-1)
+
+-   ΔH = H(t-1) - H(t)
+
+-   S = 1 - safety_penalty(t)
+
+-   ΔCal = CalGap(t-1) - CalGap(t)
+
+Training loop sketch (pseudo)
+
+-   At each tick:
+
+    1.  Forward: compute r̂, ρ̂, ŝ from homeostatic nets given ctx; simulate binding → S̄, B̄, SatNT.
+
+    2.  Run DMN step; log DMN metrics (ΔC, ΔU, ΔH, S, ΔCal) with CFG node ID.
+
+    3.  Compute Efflocal_total and Effcog; build L.
+
+    4.  Backprop L into fρ, fσ, fr; apply temporal smoothing regularizers.
+
+    5.  Update eligibility traces or critic to improve temporal credit assignment.
+
+Do you need DMN introspection?
+
+-   Strongly recommended.
+
+-   Local-only objectives (saturation vs density) can stabilize biophysics but are blind to cognitive value.
+
+-   DMN introspection via CFG node meta-context lets the system learn which neuromodulatory profiles help different cognitive phases (e.g., more NE during 3.6 Salience; more 5HT during 3.11 Mind-wandering; DA bursts tied to exploitation or learning).
+
+-   Use the CFG node and μ snapshot as conditioning inputs to fρ, fσ, fr so the nets can learn phase-specific setpoints.
+
+Practical tips
+
+-   Normalize all local terms to 0..1 before weighting; learn α, β via meta-optimization or keep priors.
+
+-   Start with β small (favor stability), then anneal upward to incorporate cognitive optimization.
+
+-   Constrain ρ̂, ŝ, r̂ with softplus or sigmoid ranges to avoid unbounded growth.
+
+-   Add a "safety clamp" on μ to prevent pathological neuromodulator states during training.
+
+Compact loss example
+L = -[α Σa,r (w1 S̄r,a + w2 RangeUtilr,a - w3 SatNTn,a - w4 NoiseLeakr,a - w5 EnergyCost)] - β (v1 ΔC + v2 ΔU + v3 ΔH + v4 S + v5 ΔCal) + λ1 ||Δθ||^2 + λ2 ||Δt θ||^2
+
+Where θ are parameters of fρ, fσ, fr; Δt is temporal difference to enforce smoothness.
+
+Bottom line
+
+-   Compute signaling efficiency as a weighted sum of local receptor-level efficiency and global DMN outcome efficiency.
+
+-   Backprop through density, sensitivity, and release networks using that composite objective.
+
+-   Include DMN introspection via CFG node and neuromodulator snapshots for phase-aware adaptation;
+
+## Neurotransmitter Projection Module
+
+In order to mimic biologically realistic neuromodulation, we add a **Neurotransmitter Projection Module** that explicitly models neurotransmitter release centers (brain nuclei), their projection pathways
+
+### Neurotransmitter Emitters (Projection Sources)
+
+Each neurotransmitter system originates from a designated **Emitter Node** (analogous to Raphe nuclei, Locus Coeruleus, VTA, Hypothalamus, etc.).  
+
+Emitters control **production, release, and modulation** of neurotransmitters, with feedback loops from other neuromodulators and cortical outputs.
+
+**Examples:**
+- **Raphe Nuclei (RN):** Produces and projects serotonin (5-HT).
+- **Locus Coeruleus (LC):** Produces and projects norepinephrine (NE).
+- **Ventral Tegmental Area (VTA):** Produces and projects dopamine (DA).
+- **Hypothalamus (HYP):** Produces oxytocin (OXT) and vasopressin.
+- **Basal Forebrain / Tuberomammillary Nucleus:** Produces histamine (HA).
+- **Hypothalamic Orexin System:** Stabilizes wake/sleep with orexin (ORX).
+
+Each **NeuroTransmitterEmitter** object:
+- Has a **baseline production rate** (µ per tick).
+- Has a **projection topology** (list of cortical/striatal targets).
+- Its release can be **modulated by other neuromodulators** (e.g. DA ↑ can indirectly suppress 5HT production).
+- Maintains a **dynamic concentration state**.
+
+---
+
+### Receptor Expression Profiles
+
+At the receiving end, every target area expresses an **Array of Receptors**, each defined by:
+
+- **Density `ρ`**: number of binding sites per receptor type.
+- **Ostheosteric site (orthosteric)**: main active binding site; requires neurotransmitter "protein" match.
+- **Allosteric site**: modulatory site that augments ost.
+
+#### Binding Dynamics
+
+- Each receptor has:
+  - **Ostheosteric Vector** (receptor embedding).
+  - **Allosteric Vector** (modulator-sensitive embedding).
+  - **Latent embedding** describing cell-surface protein identity.
+
+- Each neurotransmitter is represented as a **Protein Vector**, carrying:
+  - Base embedding (molecular identity).
+  - Instantaneous concentration level.
+  - Internal NN (dimensions = concentration level).
+  - Can only bind if **cosine similarity ≥ θ_bind** between transmitter vector and receptor site vector.
+
+#### Activity Calculation
+
+1. Binding Phase  
+   - For each receptor:  
+     If neurotransmitter cosine similarity with orthosteric > θ, binding occurs.  
+     Orthosteric contribution = `(NT_vector * sensitivity)`.  
+
+2. Allosteric Modulation  
+   - Bound allosteric proteins modify receptor output:  
+     `orthosteric_signal * f(allosteric_vector)`  
+
+3. Saturation & Density  
+   - Signal strength scales with receptor **density ρ**.  
+   - Unbound receptors output 0.  
+
+4. Final Receptor Activity  
+   - Each receptor computes activity via NN:  
+     Input dim = receptor density.  
+     Weighted by neurotransmitter embedding and modulated outputs.  
+   - Aggregate receptor activities per area produce an **Effective Neuromodulator Influence Vector**.
+
+---
+
+### Homeostatic Neuromodulator System
+
+The **Homeostatic Module** integrates the above projections with **dynamic receptor binding** and provides system-wide regulation:
+
+- Maintains **neurochemical balance** via autoreceptor-like feedback (e.g. 5HT1A receptors suppress serotonin release).
+- Tracks overall “brain milieu” vector:  
+  `μ = {DA, 5HT, NE, OXT, TST, HA, ORX}`
+- Regulatory functions:
+  1. **Exploration/Exploitation Balance** (DA vs 5HT vs NE).
+  2. **Social/Prosocial Biasing** (OXT, TST, 5HT).
+  3. **Arousal States & Wakefulness** (HA, ORX).
+  4. **Learning Drive** (DA novelty signaling).
+  5. **Emotional Safety / Threat Aversion** (5HT gating).
+  6. **Urgency / Crisis Mode** (NE bursts).
+  7. **Sleep Switch Control** (histamine decay + orexin gating for transitions).
+
+The homeostatic module therefore acts as a **cortical thermostat**, ensuring all modules work inside adaptive computational envelopes.
+
+### Why This Design Matters
+
+- **Embodiment of neurobiology**: neurotransmitters come from realistic projection centers (Raphe, VTA, LC).  
+- **High fidelity binding logic**: vector similarities with thresholds encode lock-and-key protein metaphor.  
+- **Allosteric modulation**: allows subtle control of receptor activity, mirrors pharmacology.  
+- **Neural Nets in Proteins and Receptors**:  
+  - NT “protein” nets: dynamic outputs based on level.  
+  - Receptor nets: plastic responses based on density.  
+- **System-level regulation**: Homeostat integrates activation into computational modulations for DMN/ACI loop (explore/exploit, urgency, safety, sleep/wake).  
+
+---
