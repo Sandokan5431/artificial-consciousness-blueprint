@@ -9,8 +9,7 @@ With Isaac Sim, your system can achieve genuine grounding of experience, enabl
 
 Thinking about ethical implications I think it's a safety measure to intentionally leave out any attempt at simulating phenomenological feelings. Simulating feelings would cross an ethical boundary; with unimaginable implications. A conscious being which can feel would be able to suffer. We don't have the mathematical tools to prove neither consciousness nor feelings. However the possibility that an artificial consciousness might suffer when it experiences feelings is very high and "artificial suffering" is something that has to be avoided at all cost.
 
-0. Framing
------------
+   # 0. Framing
 
 Implementing artificial consciousness is a monumental challenge, where the most intricate and foundational problem is an effective memory system. Consciousness, as conceived in this blueprint, does not simply arise from raw computation, intelligence, or isolated algorithms. Instead, it emerges through the recursive transformation and continual interplay of memories and thought streams within a structured loop of cortical analogues that interact dynamically over time. This loop binds perception, memory, goals, and self-modeling into a coherent, ongoing narrative of experience.
 
@@ -20,8 +19,7 @@ Thus, this ACI centers on memory as identity: consciousness manifests not from 
 
 *****
 
-1. Core Components
--------------------
+# 1. Core Components
 
 Our approach models ACI architecture on key human brain systems known to underpin consciousness and introspection:
 
@@ -45,13 +43,11 @@ Our approach models ACI architecture on key human brain systems known to underpi
 
 *****
 
-2. Memory: Multidimensional Graph of Experience
-------------------------------------------------
+## 2. Memory: Multidimensional Graph of Experience
 
 The heartbeat of consciousness in this model is the memory graph, which acts both as a database of experience and a dynamic knowledge architecture driving cognition and self-modeling.
 
-2.1. Memory Node Structure
---------------------------
+### 2.1. Memory Node Structure
 
 -   Content: Textual representation of events/thoughts/actions.
 
@@ -73,7 +69,7 @@ The heartbeat of consciousness in this model is the memory graph, which acts bot
 
     -   Causal (explicit action--reaction links identified by PFC and consolidation)
 
-2.2. Memory Operations
+### 2.2. Memory Operations
 ----------------------
 
 -   Encoding:
@@ -95,200 +91,272 @@ The heartbeat of consciousness in this model is the memory graph, which acts bot
 -   Hierarchical Memory Transfer:
     Episodic memories → Semantic knowledge → Autobiographical narrative.
 
-*****
+### 2.3 Visionary Memory: Prospective Knowledge
 
-3. Detailed DMN Algorithm and Thought Cycle
+**Purpose:**  
+Stores and evolves future-oriented mental content (visions, ideas, goals, hypotheses, plans, forecasts, counterfactuals) that are remembered and refined before realization. Distinct from episodic (what happened) and semantic (abstracted facts), visionary memory captures intentional, not-yet-happened constructs with explicit prospective semantics.
+
+**Conceptual Role**  
+- Complements episodic and semantic memory with a prospective lane.  
+- Enables stable recall, refinement, prioritization, and linkage of intended futures to subsequent experiences.  
+- Supports long-horizon agency by maintaining goals, decompositions, dependencies, risks, and success criteria.
+
+Data Model
+- VisionNode
+  - id
+  - type: {vision, idea, goal, plan, hypothesis, counterfactual, forecast}
+  - status: {draft, candidate, active, paused, superseded, archived, realized, failed}
+  - temporal_scope:
+    - horizon: {immediate, short, mid, long}
+    - window: [t_start_expected, t_end_expected] (optional)
+  - intent:
+    - desired_outcome (text)
+    - success_criteria: [{metric, target, tolerance}]
+    - constraints: [{name, bound, hard|soft}]
+    - risk_register: [{risk, likelihood, impact, mitigation}]
+  - provenance:
+    - origin_nodes: [MemoryRecord|NarrativeRecord|VisionNode ids]
+    - originating_CFG_nodes: [DMN node ids]
+    - μ_snapshot_at_creation
+  - embeddings:
+    - content_embedding (text, symbols, sketches)
+    - relation_signature (prospective relations below)
+  - tags: {themes, domains, stakeholders}
+  - governance:
+    - priority
+    - owner (internal submodule “sponsor”)
+    - review_cadence
+  - links:
+    - supports -> GoalNode
+    - decomposes -> PlanStepNode
+    - depends_on -> VisionNode|SkillNode|ResourceNode
+    - blocked_by -> RiskNode|ConstraintNode
+    - contradicts -> VisionNode
+    - supersedes -> VisionNode
+    - derived_from -> Narrative/Episodic nodes
+    - tracked_by -> MemoryRecord
+    - realized_by/failed_by -> MemoryRecord
+
+- PlanStepNode (specialization)
+  - step_description
+  - preconditions, postconditions
+  - required_capabilities, required_resources
+  - expected_signals (observables during execution)
+  - alignment_scores: {utility, safety, coherence, identity}
+
+Prospective Relation Operators (Latent Geometry)
+
+Augment the multi-relational manifold with future-facing transforms:
+- T_goal: alignment to current goal manifold
+- T_feasibility: capability/resource fit
+- T_risk: proximity to risk landscape
+- T_dependency: pull toward prerequisites
+- T_temporal_forecast: expected timeline axis
+- T_alignment_identity: similarity to z_self trajectory
+- T_value: expected utility axis
+
+Combined embedding:
+z_vision* = content_embedding ⊕ Σ (w_rel · T_rel)  
+Weights w_rel can be modulated by μ (e.g., DA↑ → T_value, NE↑ → T_risk, 5HT↑ → safety/constraints).
+
+Core Operations
+
+- Create (PFC-1/PFC-2, Mind-Wandering)
+  - Detect intent/goal/idea statements; instantiate VisionNode with status=draft.
+  - Compute z_vision*, attach provenance, μ snapshot, CFG node.
+
+- Retrieve & Expand (HC)
+  - Use prospective operators in sphere queries to fetch/deform related visions.
+  - Generate counterfactuals and alternative decompositions.
+
+- Value (VS)
+  - Compute Expected Prospective Value (EPV) for vision paths:
+    EPV = a1·expected_utility − a2·risk + a3·feasibility + a4·identity_alignment + a5·novelty − a6·constraint_violation − a7·effort_cost − a8·time_discount  
+    Coefficients a_k are μ-sensitive.
+
+- Select & Stage (PFC-2)
+  - Promote/demote status; decompose into PlanStepNodes; schedule review cadence.
+
+- Tag & Persist (NAcc, Memory Write)
+  - Apply persistence/reward salience; write links:
+    - tracked_by edges from VisionNode to new episodes
+    - realized_by/failed_by upon criteria satisfaction or impossibility
+  - Update success_criteria progress and feasibility predictors.
+
+- Consolidate & Prune (Sleep/GC)
+  - Merge duplicates; abstract clusters into higher-level objectives.
+  - Archive superseded/stale, low-priority visions; reconcile contradictions.
+
+Operational Notes
+
+- Visionary nodes are first-class citizens in retrieval and valuation; they coexist with episodic/semantic nodes but retain “prospective” semantics.  
+- All links are auditable with CFG provenance to enable metacognitive tracing (“how this idea formed and evolved”).  
+- Safety constraints are enforced at valuation and selection; risky visions either gain mitigations or are paused/superseded.  
+- Realization/failure is adjudicated by success_criteria matched against observed telemetry and MemoryRecords.
+
+1. Detailed DMN Algorithm and Thought Cycle
 --------------------------------------------
 
-The DMN loop runs continuously at 5--20 Hz, coordinating perception, parsing, reasoning, associative memory, and self-reflective narrative formation.
+The DMN loop runs continuously at 5–20 Hz, coordinating perception, parsing, reasoning, associative memory, and self-reflective narrative formation.
 
 3.1. Input Gathering and Preprocessing
 --------------------------------------
 
--   Sensory inputs (vision, audio, proprioception) are encoded into latent embeddings: zv, za (text, prosody), zp.
-
--   Associative cortices bind cross-modal observations into concise descriptive thought snippets.
-
--   Combine sensory embeddings and inner speech text into a composite input.
+- Sensory inputs (vision, audio, proprioception) are encoded into latent embeddings: zv, za (text, prosody), zp.
+- Associative cortices bind cross-modal observations into concise descriptive thought snippets.
+- Combine sensory embeddings and inner speech text into a composite input.
 
 3.2. MDN Parsing
 ----------------
 
--   Parse combined input into an Abstract Syntax Tree (AST), segmenting content into semantically tagged nodes:
-
-    -   Math, factual, social, recall, plan, explanation, self-reference.
+- Parse combined input into an Abstract Syntax Tree (AST), segmenting content into semantically tagged nodes:
+  - Math, factual, social, recall, plan, explanation, self-reference.
 
 3.3. PFC Stage 1 Dispatch
 -------------------------
 
--   For each AST node:
-
-    -   *Math nodes:* Regex extraction and execution of symbolic evaluation (SymPy) to generate definite results.
-
-    -   *Factual/Recall nodes:* Query memory graph with hybrid text and embedding search to synthesize answers.
-
-    -   *Social/Explain nodes:* Mini LLM chains generate empathetic or abductive explanatory content.
-
--   Merge enriched nodes back into a comprehensive context pack, combining AST plus sensory and self-model information.
+- For each AST node:
+  - Math nodes: Regex extraction and execution of symbolic evaluation (SymPy) to generate definite results.
+  - Factual/Recall nodes: Query memory graph with hybrid text and embedding search to synthesize answers.
+  - Social/Explain nodes: Mini LLM chains generate empathetic or abductive explanatory content.
+- Merge enriched nodes back into a comprehensive context pack, combining AST plus sensory and self-model information.
+- Additionally, detect intent/plan content and create or extend VisionNodes so future-oriented constructs (visions, goals, hypotheses, plans) are captured in Visionary Memory with “not-yet-happened” semantics.
 
 3.4. Iterative Thought Layer Generation & Scoring
 -------------------------------------------------
 
-1.  Generate a diverse set of candidate thoughts c_i from the enriched context via an LLM with varied decoding styles: {literal, formal, terse, abductive, empathetic}.
+1) Generate a diverse set of candidate thoughts c_i from the enriched context via an LLM with varied decoding styles: {literal, formal, terse, abductive, empathetic}.
 
-2.  Extract features per candidate:
+2) Extract features per candidate:
+- Coherence via entailment & self-assessment.
+- Identity coherence estimated by cosine similarity with current self-model z_self.
+- Task utility aligned with goals.
+- Novelty (distance from recent thoughts).
+- Epistemic gain (expected information gain/uncertainty reduction).
+- Safety metrics (toxicity, hallucination flags, constitutional compliance).
+- Calibration gap (discrepancy between likelihood and confidence).
 
-    -   Coherence via entailment & self-assessment.
+3) Score candidates with neuromodulator-weighted linear combination (cleaned to a single expression):
+score(c) = w_DA·nov + w_EPI·epi + w_TASK·util + w_SOC·prosocial + w_ID·idcoh − w_SAFE·penalty
 
-    -   Identity coherence estimated by cosine similarity with current self-model z_self.
+4) Refine context iteratively by augmenting it with the top candidate thought, repeat generation and scoring until these termination criteria are met:
+- Top candidate remains stable for k cycles.
+- Marginal improvement below threshold ε.
+- Safety or computational budget exceeded.
 
-    -   Task utility aligned with goals.
-
-    -   Novelty (distance from recent thoughts).
-
-    -   Epistemic gain (expected information gain/uncertainty reduction).
-
-    -   Safety metrics (toxicity, hallucination flags, constitutional compliance).
-
-    -   Calibration gap (discrepancy between likelihood and confidence).
-
-3.  Score candidates with neuromodulator-weighted linear combination (cleaned to a single expression):
-
-    score(c) = w_DA·nov + w_EPI·epi + w_TASK·util + w_SOC·prosocial + w_ID·idcoh − w_SAFE·penalty
-
-4.  Refine context iteratively by augmenting it with the top candidate thought, repeat generation and scoring until these termination criteria are met:
-
-    -   Top candidate remains stable for k cycles.
-
-    -   Marginal improvement below threshold ε.
-
-    -   Safety or computational budget exceeded.
-
-5.  Output the best thought chain (pre-HC expansion) — an ordered, scored sequence of internal thoughts.
+5) Output the best thought chain (pre-HC expansion) — an ordered, scored sequence of internal thoughts.
+- At this stage, also generate refinements of VisionNodes, alternative strategies, and plan decompositions; attach them to the evolving thought chain to keep prospective content co-evolving with deliberation.
 
 3.5. DMN Binding and Hippocampal Expansion
 ------------------------------------------
 
--   Bind sensory embeddings zv, zp, thought chain, self-model z_self, and small memory snippets in global workspace b_t.
-
--   Use HC to expand b_t into an enriched thought graph containing associative and hypothetical variants plus partial replays.
+- Bind sensory embeddings zv, zp, thought chain, self-model z_self, and small memory snippets in global workspace b_t.
+- Use HC to expand b_t into an enriched thought graph containing associative and hypothetical variants plus partial replays.
+- When querying memory, include Visionary Memory using prospective relation operators (e.g., T_goal, T_feasibility, T_risk, T_dependency, T_temporal_forecast, T_alignment_identity, T_value) to retrieve visionary neighbors and generate counterfactual variants aligned with current goals and constraints.
 
 3.6. Ventral Striatum Exploration and Valuation
 -----------------------------------------------
 
--   Explore the HC-expanded graph using beam search or graph walks.
-
--   For each candidate path, compute salience and value based on weighted features (novelty, emotional affect, relevance, uncertainty reduction) minus safety penalties (cleaned to a single expression):
-
-    val(path) = Σ_k w_k(μ)·feature_k − safety_penalty
+- Explore the HC-expanded graph using beam search or graph walks.
+- For each candidate path, compute salience and value based on weighted features (novelty, emotional affect, relevance, uncertainty reduction) minus safety penalties (cleaned to a single expression):
+val(path) = Σ_k w_k(μ)·feature_k − safety_penalty
+- For paths involving VisionNodes, compute Expected Prospective Value (EPV) and rank vision paths by expected utility, feasibility, risk, identity alignment, safety margin, effort cost, and time discount.
 
 3.7. PFC Stage 2 Selection
 --------------------------
 
--   Filter paths for coherence and safety.
-
--   Collapse the candidate graph to a single coherent chosen chain with attached confidence.
-
--   Choose actions among internal (self-query, simulate) or external (speech, behavior) modes.
+- Filter paths for coherence and safety.
+- Collapse the candidate graph to a single coherent chosen chain with attached confidence.
+- Choose actions among internal (self-query, simulate) or external (speech, behavior) modes.
+- Update VisionNode statuses (e.g., draft→candidate→active), select plan steps to stage, and schedule reviews while enforcing safety and coherence constraints.
 
 3.8. Nucleus Accumbens Reward Tagging and Persistence
 -----------------------------------------------------
 
--   Apply reinforcement tags based on neuromodulator states.
-
--   Update memory nodes with persistence decisions.
-
--   Trigger symbolic abstraction if repetition thresholds are exceeded.
+- Apply reinforcement tags based on neuromodulator states.
+- Update memory nodes with persistence decisions.
+- Trigger symbolic abstraction if repetition thresholds are exceeded.
+- Persistence tagging also biases recall/scheduling of active and high-EPV VisionNodes to ensure prospective content remains salient.
 
 3.9. Memory Write & Autobiographical Narrative
 ----------------------------------------------
 
-1. Episodic Memory Storage   
-   Write chosen chain to MemoryTape.  
-   Link edges through MemoryGraph (temporal, similarity, causal, goal relevance).
+1) Episodic Memory Storage  
+Write chosen chain to MemoryTape.  
+Link edges through MemoryGraph (temporal, similarity, causal, goal relevance).
 
-2. Multi-Relational Embedding Space  
-   Every time we add edges, we encode the updated working memory graph into a latent vector space:  
+2) Multi-Relational Embedding Space  
+Every time we add edges, we encode the updated working memory graph into a latent vector space:  
 
-    Each MemoryRecord has:  
-    content_embedding: semantic representation (text, sensor fusion, context).  
-    Each edge type is assigned a transformation vector or operator:  
-    ```
-    T_temporal = unit displacement on time axis.  
-    T_similarity = close embedding alignment.  
-    T_causal = directional translation (TransE-style: cause + relation ≈ effect).  
-    T_relevance = weighted axis conditioned on current goal embedding. 
-    ``` 
-    Combined embedding:  
-    `z_node* = content_embedding ⊕ Σ (relation_weight × T_relation)`  
-    > This means nodes aren’t just content, they are content + relational signature.  
-    This gives us a multi-relational latent manifold where:  
-    Radius search retrieves nodes connected by one type of relation (similarity sphere).  
-    Higher-dimensional sphere query retrieves clusters that satisfy all relations simultaneously (similar, temporally close, causally relevant, and salient).
+Each MemoryRecord has:  
+content_embedding: semantic representation (text, sensor fusion, context).  
+Each edge type is assigned a transformation vector or operator:  
 
-    👁 Analogy: This is like mixing word embeddings with knowledge graph embeddings (TransE/RotatE/ComplEx) and then projecting them into a single working latent space for the HC to search.
+```
+T_temporal = unit displacement on time axis.  
+T_similarity = close embedding alignment.  
+T_causal = directional translation (TransE-style: cause + relation ≈ effect).  
+T_relevance = weighted axis conditioned on current goal embedding. 
+``` 
+Combined embedding:  
+`z_node* = content_embedding ⊕ Σ (relation_weight × T_relation)`  
+> This means nodes aren’t just content, they are content + relational signature.  
+This gives us a multi-relational latent manifold where:  
+Radius search retrieves nodes connected by one type of relation (similarity sphere).  
+Higher-dimensional sphere query retrieves clusters that satisfy all relations simultaneously (similar, temporally close, causally relevant, and salient).
 
-3. Autobiographical Narrative Storage (expanded)
-    Narrative nodes now also get multi-relational embeddings:
+👁 Analogy: This is like mixing word embeddings with knowledge graph embeddings (TransE/RotatE/ComplEx) and then projecting them into a single working latent space for the HC to search.
 
-    Use a set transformer or GRU over the embeddings of all linked episodic memories.
-    Store narrative as:  
-    summary_text (LLM-generated).  
-    narrative_embedding = pooled latent vector representing both memories + relation types.  
-    
-    This allows queries like:  
-    > “Find all narratives in which I was under social stress and learned something new.”
-    
-    By executing a high-dimensional sphere query in relation space combining  
-    `tag=stress, relation=causality, and goal=learning.`
-    
-4. Algorithm Insert (Updated 3.9 Section)
-    python  
+3) Autobiographical Narrative Storage (expanded)  
+Narrative nodes now also get multi-relational embeddings:
 
-```python
-def memory_write_and_narrative(scene, chosen_chain, μ, z_self, goals):
-    # Step 1. Storage
-    mem_id = MemoryTape.append(
-        timestamp=now(),
-        content=chosen_chain,
-        sensory_snapshot=scene,
-        content_embedding=encode(scene, chosen_chain),
-        tags={μ, goals}
-    )
+Use a set transformer or GRU over the embeddings of all linked episodic memories.  
+Store narrative as:  
+summary_text (LLM-generated).  
+narrative_embedding = pooled latent vector representing both memories + relation types.  
 
-    # Add graph edges
-    MemoryGraph.add_temporal_edge(mem_id-1, mem_id)
-    MemoryGraph.add_similarity_edges(mem_id, SIM_RADIUS)
-    MemoryGraph.add_goal_edges(mem_id, goals)
-    
-    if detects_action_outcome_pair(chosen_chain):
-        MemoryGraph.add_causal_edge(action_id, outcome_id)
+This allows queries like:  
+> “Find all narratives in which I was under social stress and learned something new.”
 
-    # Step 2. Multi-relational embedding update
-    rel_vector = combine_relations(mem_id, MemoryGraph)
-    latent_embedding = mem_id.content_embedding + rel_vector
-    MemoryGraph.update_embedding(mem_id, latent_embedding)
+By executing a high-dimensional sphere query in relation space combining  
+`tag=stress, relation=causality, and goal=learning.`
 
-    # Step 3. Narrative summary
-    recent_ids = MemoryTape.last(N_CHUNK)
-    if summarize_condition(recent_ids):
-        summary, narrative_embedding = generate_narrative(recent_ids, z_self)
-        NarrativeChain.add(
-            time_range=(recent_ids[0].t, recent_ids[-1].t),
-            linked_memories=recent_ids,
-            summary_text=summary,
-            narrative_embedding=narrative_embedding,
-            self_model_snapshot=z_self,
-            goals_snapshot=goals,
-            μ_snapshot=μ
-        )
+- During Memory Write, also link episodes to any referenced VisionNodes (tracked_by → MemoryRecord) and update realization progress, including realized_by/failed_by when success criteria are met or infeasible; adjust feasibility predictors accordingly.
 
-    return mem_id
-```  
-  
+3.10. World Model and Self-Model Update
+---------------------------------------
+
+- Update recurrent world state via RSSM with latest encoded inputs and executed actions.
+- Update self-model z_self via EMA and learned GRUs from b_t and autobiographical narrative, modulated by μ.
+
+3.11. Mind-Wandering Micro-Loop Activation
+------------------------------------------
+
+- Triggered when serotonin 5HT is high and external input demand low, or uncertainty is elevated.
+- Executes sequences of internal introspection without external actions:
+  - Repeated self-queries, hypothesis generation, memory expansions, salience evaluation, filtered selection, and reward tagging.
+- Supports creativity, insight, and reflection.
+- Incubate VisionNodes via divergent exploration (novel alternatives under constraints) and convergent refinement (mitigate risks/constraints), including counterfactual stress-testing of dependencies and timelines.
+
+3.12. Recursive Re-entry into DMN
+---------------------------------
+
+- Feed the chosen thought chain as inner speech into the next cycle's DMN input combined with fresh sensory text.
+- Loop continues endlessly, enabling ongoing conscious experience.
+
+Sleep / Garbage Collection (Meta-Gate)
+--------------------------------------
+
+- Enter sleep-like state when histamine (HA) drops below a threshold (and/or orexin low).
+- Processes:
+  - Garbage Collection (GC): purge low-value/redundant traces, decay low-salience nodes.
+  - Memory Consolidation: episodic → semantic; narrative updates; symbolic abstraction of repeated event-sequences; update long-term predictive/Markov models.
+  - Replay & Reweighting: HC replay strengthens salient edges; downscale irrelevant activations.
+- Wake Transition: when HA surpasses the wake-threshold, return to wake DMN loop.
+- Consolidate visionary clusters into higher-level objectives, prune stale/superseded items, reconcile contradictions, and learn feasibility/realization predictors from accumulated evidence.
 
 > ✅ Perplexity: One unified latent space means the hippocampus doesn’t need to separately search similarity, causality, time, goals — it just queries a manifold ball.
->
+
 > Sphere queries → HC.expand(b_t, radius=r, relation_weights=W) can dynamically tune which relations matter (like “bias toward causality vs similarity”), modulated by neuromodulators.
 >
 > Narrative embeddings make autobiographical reasoning as searchable as episodic memories.
