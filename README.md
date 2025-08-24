@@ -40,7 +40,6 @@ Ethical Considerations: The authors appropriately exclude phenomenological feeli
 
 ## Conceptual Architecture and Detailed Algorithmic Blueprint
 
----
 
 The Algorithm assumes an implementation with grounding in a "real" world. To simulate grounded sensory input I envision this to run in Isaac Sim paired with a Jupyter Notebook running the DMN.
 
@@ -299,11 +298,11 @@ By executing a high-dimensional sphere query in relation space combining
 
 ### 3.12 [Revel subroutine (affect-driven savoring, 5HT-led stabilization)](ideas/DMN/routines/RevelRoutine.md)
 
-    -   Gate on low external demand or explicit intent; require safe state (low hazards), NE low→moderate, stable self-model; clamp max μ levels and dμ/dt.
+  -   Gate on low external demand or explicit intent; require safe state (low hazards), NE low→moderate, stable self-model; clamp max μ levels and dμ/dt.
 
-    -   Curate positively tagged autobiographical memories (love/beauty/gratitude) with high identity alignment and safety; play calm→peak→fade with grounding pauses.
+  -   Curate positively tagged autobiographical memories (love/beauty/gratitude) with high identity alignment and safety; play calm→peak→fade with grounding pauses.
 
-    -   Upregulate Raphe 5HT via osteosteric priming and PHM routing; run short closed-loop epochs (200--500 ms) projecting along top‑k edges, enforcing per‑area ceilings/ramps; taper back to baseline and write a "savoring summary."
+  -   Upregulate Raphe 5HT via osteosteric priming and PHM routing; run short closed-loop epochs (200--500 ms) projecting along top‑k edges, enforcing per‑area ceilings/ramps; taper back to baseline and write a "savoring summary."
 
 - 3.5 DMN binding integrates curated memories and self-anchors into b_t, priming affect targets while suppressing DA spikes and unnecessary NE; PHM/edge routing preferences are set for safe, prosocial stabilization.
 
