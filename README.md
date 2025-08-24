@@ -357,17 +357,26 @@ By executing a high-dimensional sphere query in relation space combining
 - Update recurrent world state via RSSM with latest encoded inputs and executed actions.
 - Update self-model z_self via EMA and learned GRUs from b_t and autobiographical narrative, modulated by μ.
 
-  3.11. Mind-Wandering Micro-Loop Activation
-
----
-
+### 3.11. Mind-Wandering Micro-Loop Activation
 - Triggered when serotonin 5HT is high and external input demand low, or uncertainty is elevated.
 - Executes sequences of internal introspection without external actions:
   - Repeated self-queries, hypothesis generation, memory expansions, salience evaluation, filtered selection, and reward tagging.
 - Supports creativity, insight, and reflection.
 - Incubate VisionNodes via divergent exploration (novel alternatives under constraints) and convergent refinement (mitigate risks/constraints), including counterfactual stress-testing of dependencies and timelines.
 
-  3.12. Recursive Re-entry into DMN
+### 3.12 Revel subroutine (affect-driven savoring, 5HT-led stabilization)
+
+  -   Gate on low external demand or explicit intent; require safe state (low hazards), NE low→moderate, stable self-model; clamp max μ levels and dμ/dt.
+
+  -   Curate positively tagged autobiographical memories (love/beauty/gratitude) with high identity alignment and safety; play calm→peak→fade with grounding pauses.
+
+  -   Upregulate Raphe 5HT via osteosteric priming and PHM routing; run short closed-loop epochs (200--500 ms) projecting along top‑k edges, enforcing per‑area ceilings/ramps; taper back to baseline and write a "savoring summary."
+
+-   3.5 DMN binding integrates curated memories and self-anchors into b_t, priming affect targets while suppressing DA spikes and unnecessary NE; PHM/edge routing preferences are set for safe, prosocial stabilization.
+
+-   3.6--3.7 Closed-loop control ties μ adjustments to online metrics (ΔC, ΔH, safety, identity drift), dynamically scaling emitter outflux and edge weights; immediate taper/abort on coherence drop or safety rise, then reintegrate and persist narrative links.
+-   
+  3.13. Recursive Re-entry into DMN
 
 ---
 
