@@ -1,0 +1,141 @@
+nodes:
+  "0.1":
+    name: "Sensory Cortex"
+    function: "Receives real-world sensory input"
+    in:
+      - "10.9" # Recursive Re-Entry -> next cycle sensory capture
+    out:
+      - "0.2"
+
+  "0.2":
+    name: "Associative Cortex"
+    function: "Transforms sensory data into latent embeddings and scene snippets"
+    in:
+      - "0.1"
+    out:
+      - "1.1"
+
+  "1.1":
+    name: "MDN Parsing"
+    function: "Parses input text into AST with semantic tags"
+    in:
+      - "0.2"
+    out:
+      - "2.1"
+
+  "2.1":
+    name: "PFC-1 Dispatch"
+    function: "Executes AST subtasks: math eval, memory recall, social/explain; merges enriched context"
+    in:
+      - "1.1"
+    out:
+      - "3.1"
+
+  "3.1":
+    name: "Candidate Generation"
+    function: "Generates diverse thought candidates and pre-scores them"
+    in:
+      - "2.1"
+    out:
+      - "4.1"
+
+  "4.1":
+    name: "HC Binding/Expansion"
+    function: "Binds workspace b_t; expands with associative and counterfactual variants"
+    in:
+      - "3.1"
+    out:
+      - "5.1"
+
+  "5.1":
+    name: "VS Salience Valuation"
+    function: "Values candidate paths by novelty, affect, relevance, uncertainty drop"
+    in:
+      - "4.1"
+    out:
+      - "6.1"
+
+  "6.1":
+    name: "PFC-2 Selection"
+    function: "Prunes, collapses to a coherent safe chain; assigns confidence"
+    in:
+      - "5.1"
+    out:
+      - "7.1" # normal forward
+      - "3.1" # regeneration on fail/low confidence
+
+  "7.1":
+    name: "NAcc Reward Tagging"
+    function: "Applies reward/persistence tagging; urgency adjustments"
+    in:
+      - "6.1"
+    out:
+      - "8.1"
+
+  "8.1":
+    name: "Memory Write & Narrative"
+    function: "Persists episode; updates multi-relational embeddings; conditional narrative summary"
+    in:
+      - "7.1"
+    out:
+      - "9.1"
+
+  "9.1":
+    name: "World & Self-Model Update"
+    function: "RSSM world update; EMA/GRU self-model update"
+    in:
+      - "8.1"
+    out:
+      - "10.1" # optional mind-wandering if gated
+      - "10.9" # else directly to re-entry
+
+  "10.1":
+    name: "Mind-Wandering Loop"
+    function: "Internal self-queries, simulations, memory expansions and selection (no external action)"
+    in:
+      - "9.1"
+    out:
+      - "10.9"
+
+  "10.9":
+    name: "Recursive Re-Entry"
+    function: "Feeds chosen chain as inner speech into next cycle input"
+    in:
+      - "9.1"
+      - "10.1"
+    out:
+      - "0.1"
+
+  "11.1":
+    name: "Sleep / Garbage Collection"
+    function: "Gated sleep: GC, replay, consolidation; wake when HA/ORX cross threshold"
+    in:
+      - "0.1"
+      - "1.1"
+      - "2.1"
+      - "3.1"
+      - "4.1"
+      - "5.1"
+      - "6.1"
+      - "7.1"
+      - "8.1"
+      - "9.1"
+      - "10.1"
+      - "10.9"
+    out:
+      - "0.1"
+
+guards:
+  - at: "6.1"
+    condition: "safety_fail OR coherence_fail OR confidence < θ_conf"
+    action: "route out to 3.1 for regeneration"
+
+  - at: "9.1"
+    condition: "(5HT high AND low external demand) OR uncertainty > τ"
+    action: "route out to 10.1 (mind-wandering)"
+    else: "route out to 10.9"
+
+  - global: "sleep_gate"
+    condition: "HA < θ_sleep OR ORX low"
+    action: "route from current node to 11.1 (sleep/GC); upon HA > θ_wake AND ORX sufficient, route 11.1 -> 0.1"
+```
